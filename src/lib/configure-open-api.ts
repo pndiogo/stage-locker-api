@@ -1,4 +1,4 @@
-import { apiReference } from "@scalar/hono-api-reference";
+import { Scalar } from "@scalar/hono-api-reference";
 
 import type { AppOpenAPI } from "./types";
 
@@ -15,7 +15,7 @@ export default function configureOpenAPI(app: AppOpenAPI) {
 
   app.get(
     "/reference",
-    apiReference({
+    Scalar({
       layout: "classic",
       defaultHttpClient: {
         targetKey: "js",
