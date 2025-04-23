@@ -14,10 +14,13 @@ import type { GetUserRoute, LoginRoute, SignupRoute } from "./auth.routes";
 
 export const signup: AppRouteHandler<SignupRoute> = async (c) => {
   const user = c.req.valid("json");
+  const { email, password } = user;
+
+  const normalizedEmail = email.trim().toLowerCase();
 
   const existingUser = await db.query.users.findFirst({
     where(fields, operators) {
-      return operators.eq(fields.email, user.email);
+      return operators.eq(fields.email, normalizedEmail);
     },
   });
 
@@ -31,10 +34,11 @@ export const signup: AppRouteHandler<SignupRoute> = async (c) => {
     );
   }
 
-  const hashedPassword = await hash(user.password, 10);
+  const hashedPassword = await hash(password, 10);
 
   const [inserted] = await db.insert(users).values({
     ...user,
+    email: normalizedEmail,
     password: hashedPassword,
   }).returning();
 
