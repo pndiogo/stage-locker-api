@@ -84,9 +84,9 @@ export const login: AppRouteHandler<LoginRoute> = async (c) => {
 
 export const getUser: AppRouteHandler<GetUserRoute> = async (c) => {
   const { id } = c.req.valid("param");
-  const jwtUserId = c.var.jwtUserId;
+  const userId = c.var.user.id;
 
-  if (!jwtUserId || jwtUserId !== id) {
+  if (userId !== id) {
     return c.json(
       { message: "Forbidden: You are not allowed to access this resource" },
       HttpStatusCodes.FORBIDDEN,

@@ -1,11 +1,16 @@
 import type { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
+import type { InferSelectModel } from "drizzle-orm";
 import type { Schema } from "hono";
 import type { PinoLogger } from "hono-pino";
+
+import type { users } from "@/db/schema/auth";
+
+export type User = InferSelectModel<typeof users>;
 
 export interface AppBindings {
   Variables: {
     logger: PinoLogger;
-    jwtUserId: string;
+    user: User;
   };
 };
 

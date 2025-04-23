@@ -89,6 +89,10 @@ export const getUser = createRoute({
       forbiddenSchema,
       "Not allowed to access this resource",
     ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      unauthorizedSchema,
+      "Invalid credentials",
+    ),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(IdUUIDParamsSchema),
       "Invalid id error",

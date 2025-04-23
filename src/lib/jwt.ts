@@ -12,7 +12,8 @@ export async function signJwt({ sub }: JwtPayload) {
     iss: "Stage Locker API",
     aud: "Stage Locker Client",
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 60 * 5, // 5 minutes
+    nbf: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30 * 6, // 6 months
     jti: crypto.randomUUID(),
   };
 
