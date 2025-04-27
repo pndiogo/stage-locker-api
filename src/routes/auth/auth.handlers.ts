@@ -8,9 +8,10 @@ import type { AppRouteHandler } from "@/lib/types";
 import db from "@/db";
 import { selectUserSchema, users } from "@/db/schema";
 import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
-import { signJwt } from "@/lib/jwt";
+import { sendVerificationEmail } from "@/lib/email";
+import { generateLoginJWT, verifyJWT } from "@/lib/jwt";
 
-import type { GetUserRoute, LoginRoute, SignupRoute } from "./auth.routes";
+import type { GetUserRoute, LoginRoute, ResendVerificationEmailRoute, SignupRoute, VerifyEmailRoute } from "./auth.routes";
 
 export const signup: AppRouteHandler<SignupRoute> = async (c) => {
   const user = c.req.valid("json");
@@ -44,7 +45,99 @@ export const signup: AppRouteHandler<SignupRoute> = async (c) => {
 
   const sanitizedUser = selectUserSchema.parse(inserted);
 
+  try {
+    await sendVerificationEmail({
+      userId: sanitizedUser.id,
+      email: sanitizedUser.email,
+    });
+  }
+  catch (error) {
+    console.error("Error sending verification email:", error);
+    return c.json(
+      {
+        message: "Error sending verification email",
+      },
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+
   return c.json(sanitizedUser, HttpStatusCodes.CREATED);
+};
+
+export const verifyEmail: AppRouteHandler<VerifyEmailRoute> = async (c) => {
+  const token = c.req.valid("query").token;
+
+  const payload = await verifyJWT(token);
+
+  if (!payload) {
+    return c.json(
+      { message: "Invalid or expired token" },
+      HttpStatusCodes.UNAUTHORIZED,
+    );
+  }
+
+  const userId = payload.sub as string;
+
+  const [updatedUser] = await db.update(users)
+    .set({ verified: true })
+    .where(eq(users.id, userId))
+    .returning();
+
+  if (!updatedUser) {
+    return c.json(
+      { message: "User not found" },
+      HttpStatusCodes.NOT_FOUND,
+    );
+  }
+
+  return c.body(null, HttpStatusCodes.NO_CONTENT);
+};
+
+export const resendVerificationEmail: AppRouteHandler<ResendVerificationEmailRoute> = async (c) => {
+  const { email } = c.req.valid("json");
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const user = await db.query.users.findFirst({
+    where(fields, operators) {
+      return operators.eq(fields.email, normalizedEmail);
+    },
+  });
+
+  if (!user) {
+    return c.json(
+      { message: "User not found" },
+      HttpStatusCodes.NOT_FOUND,
+    );
+  }
+
+  if (user.verified) {
+    return c.json(
+      { message: "Email is already verified" },
+      HttpStatusCodes.BAD_REQUEST,
+    );
+  }
+
+  try {
+    await sendVerificationEmail({
+      userId: user.id,
+      email: user.email,
+    });
+  }
+  catch (error) {
+    console.error("Error sending verification email:", error);
+    return c.json(
+      {
+        message: "Error sending verification email",
+      },
+      HttpStatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+
+  return c.json(
+    { message: "Verification email sent" },
+    HttpStatusCodes.OK,
+  );
 };
 
 export const login: AppRouteHandler<LoginRoute> = async (c) => {
@@ -76,7 +169,7 @@ export const login: AppRouteHandler<LoginRoute> = async (c) => {
     );
   }
 
-  const token = await signJwt({ sub: user.id });
+  const token = await generateLoginJWT({ sub: user.id });
 
   const sanitizedUser = selectUserSchema.parse(user);
 

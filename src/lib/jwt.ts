@@ -2,11 +2,14 @@ import { sign, verify } from "hono/jwt";
 
 import env from "@/env";
 
-interface JwtPayload {
-  sub: string;
+interface JWTPayload {
+  exp?: number;
+  nbf?: number;
+  iat?: number;
+  [key: string]: unknown;
 }
 
-export async function signJwt({ sub }: JwtPayload) {
+export async function generateLoginJWT({ sub }: JWTPayload) {
   const payload = {
     sub,
     iss: "Stage Locker API",
@@ -18,17 +21,25 @@ export async function signJwt({ sub }: JwtPayload) {
   };
 
   const secret = env.JWT_SECRET;
-  const token = await sign(payload, secret);
-
-  return token;
+  return await sign(payload, secret);
 }
 
-export async function verifyJwt(token: string) {
+export async function generateUserVerificationJWT({ sub }: JWTPayload): Promise<string> {
+  const payload = {
+    sub,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 60 * 15, // 15 minutes
+  };
+
+  const secret = env.JWT_SECRET;
+  return await sign(payload, secret);
+}
+
+export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   const secret = env.JWT_SECRET;
 
   try {
     const payload = await verify(token, secret);
-
     return payload;
   }
   catch (error) {

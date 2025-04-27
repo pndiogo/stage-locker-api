@@ -2,14 +2,7 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-const emailSchema = z.string().email("Invalid email format");
-const passwordSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters long")
-  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-  .regex(/\d/, "Password must contain at least one number")
-  .regex(/[@$!%*?&#]/, "Password must contain at least one special character (@, $, !, %, *, ?, &, #)");
+import { emailSchema, passwordSchema } from "@/lib/schemas";
 
 export const users = sqliteTable("user", {
   id: text()
@@ -17,6 +10,9 @@ export const users = sqliteTable("user", {
     .$defaultFn(() => crypto.randomUUID()),
   email: text().unique().notNull(),
   password: text().notNull(),
+  verified: integer({ mode: "boolean" })
+    .notNull()
+    .default(false),
   createdAt: integer({ mode: "timestamp" })
     .$defaultFn(() => new Date()),
   updatedAt: integer({ mode: "timestamp" })

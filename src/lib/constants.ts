@@ -18,3 +18,7 @@ export const badRequestSchema = createMessageObjectSchema(HttpStatusPhrases.BAD_
 export const forbiddenSchema = createMessageObjectSchema(HttpStatusPhrases.FORBIDDEN);
 
 export const unauthorizedSchema = createMessageObjectSchema(HttpStatusPhrases.UNAUTHORIZED);
+
+export const internalServerErrorSchema = createMessageObjectSchema(HttpStatusPhrases.INTERNAL_SERVER_ERROR);
+
+export const tooManyRequestsSchema = createMessageObjectSchema(HttpStatusPhrases.TOO_MANY_REQUESTS);

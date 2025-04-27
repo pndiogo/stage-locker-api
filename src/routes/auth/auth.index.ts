@@ -6,6 +6,8 @@ import * as routes from "./auth.routes";
 const router = createRouter()
   .openapi(routes.signup, handlers.signup)
   .openapi(routes.login, handlers.login)
+  .openapi(routes.verifyEmail, handlers.verifyEmail)
+  .openapi(routes.resendVerificationEmail, handlers.resendVerificationEmail)
   .openapi(routes.getUser, handlers.getUser);
 // .openapi(routes.listUsers, handlers.listUsers)
 

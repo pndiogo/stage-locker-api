@@ -15,9 +15,14 @@ const EnvSchema = z.object({
   NODE_ENV: z.string().default("development"),
   PORT: z.coerce.number().default(9999),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]),
+  FRONTEND_URL: z.string().url(),
+  BACKEND_URL: z.string().url(),
   DATABASE_URL: z.string().url(),
   DATABASE_AUTH_TOKEN: z.string().optional(),
   JWT_SECRET: z.string(),
+  MAILERSEND_API_TOKEN: z.string(),
+  MAILERSEND_EMAIL: z.string().email(),
+  MAILERSEND_TEMPLATE_ID: z.string(),
 }).superRefine((input, ctx) => {
   if (input.NODE_ENV === "production" && !input.DATABASE_AUTH_TOKEN) {
     ctx.addIssue({
