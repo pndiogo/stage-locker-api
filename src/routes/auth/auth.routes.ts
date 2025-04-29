@@ -11,6 +11,7 @@ import { rateLimit } from "@/middlewares/rate-limit";
 const tags = ["Auth"];
 
 export const signup = createRoute({
+  tags,
   path: "/auth/signup",
   method: "post",
   request: {
@@ -19,7 +20,6 @@ export const signup = createRoute({
       "The user to create",
     ),
   },
-  tags,
   responses: {
     [HttpStatusCodes.CREATED]: jsonContent(
       selectUserSchema,
@@ -41,6 +41,7 @@ export const signup = createRoute({
 });
 
 export const verifyEmail = createRoute({
+  tags,
   path: "/auth/verify-email",
   method: "get",
   request: {
@@ -48,7 +49,6 @@ export const verifyEmail = createRoute({
       token: z.string(),
     }),
   },
-  tags,
   responses: {
     [HttpStatusCodes.NO_CONTENT]:
     {
@@ -70,6 +70,7 @@ export const verifyEmail = createRoute({
 });
 
 export const resendVerificationEmail = createRoute({
+  tags,
   path: "/auth/resend-verification-email",
   method: "post",
   middleware: [rateLimit(3, 5 * 60 * 1000)], // Limit to 3 requests per 5 minutes
@@ -81,7 +82,6 @@ export const resendVerificationEmail = createRoute({
       "The user to resend the verification email",
     ),
   },
-  tags,
   responses: {
     [HttpStatusCodes.NO_CONTENT]: {
       description: "Verification email sent",
@@ -113,6 +113,7 @@ export const resendVerificationEmail = createRoute({
 });
 
 export const login = createRoute({
+  tags,
   path: "/auth/login",
   method: "post",
   middleware: [verifyUserStatus], // Limit to 3 requests per 5 minutes
@@ -122,7 +123,6 @@ export const login = createRoute({
       "The user to log in",
     ),
   },
-  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       loginUserchemaResponse,
@@ -144,6 +144,7 @@ export const login = createRoute({
 });
 
 export const getUser = createRoute({
+  tags,
   path: "/auth/user/{id}",
   method: "get",
   middleware: [authenticate],
@@ -153,7 +154,6 @@ export const getUser = createRoute({
       Authorization: z.string(),
     }),
   },
-  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       selectUserSchema,
@@ -179,9 +179,9 @@ export const getUser = createRoute({
 });
 
 // export const listUsers = createRoute({
+//   tags,
 //   path: "/auth/users",
 //   method: "get",
-//   tags,
 //   responses: {
 //     [HttpStatusCodes.OK]: jsonContent(
 //       z.array(selectUserSchema),
@@ -191,6 +191,7 @@ export const getUser = createRoute({
 // });
 
 // export const patch = createRoute({
+//   tags,
 //   path: "/tasks/{id}",
 //   method: "patch",
 //   request: {
@@ -200,7 +201,6 @@ export const getUser = createRoute({
 //       "The task updates",
 //     ),
 //   },
-//   tags,
 //   responses: {
 //     [HttpStatusCodes.OK]: jsonContent(
 //       selectTasksSchema,
@@ -219,12 +219,12 @@ export const getUser = createRoute({
 // });
 
 // export const remove = createRoute({
+//   tags,
 //   path: "/tasks/{id}",
 //   method: "delete",
 //   request: {
 //     params: IdParamsSchema,
 //   },
-//   tags,
 //   responses: {
 //     [HttpStatusCodes.NO_CONTENT]: {
 //       description: "Task deleted",

@@ -16,6 +16,7 @@ node_modules/
 .env.development
 .env.development.local
 .env.production
+*.local
 
 # logs
 logs/
@@ -26,10 +27,25 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# production
+build/
+dist/
+dist-ssr/
+
+# cache
+.cache/
+
+# coverage
+coverage/
+
+#db
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+
+
+
 # misc
 .DS_Store
-
-dev.db
-test.db
 .vercel
-dist

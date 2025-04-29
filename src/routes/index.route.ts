@@ -9,8 +9,8 @@ const router = createRouter()
   .openapi(
     createRoute({
       tags: ["Index"],
-      method: "get",
       path: "/",
+      method: "get",
       responses: {
         [HttpStatusCodes.OK]: jsonContent(
           createMessageObjectSchema("Stage Locker API"),
@@ -27,8 +27,8 @@ const router = createRouter()
   .openapi(
     createRoute({
       tags: ["Health"],
-      method: "get",
       path: "/health",
+      method: "get",
       responses: {
         [HttpStatusCodes.OK]: jsonContent(
           createMessageObjectSchema("Health Check"),
