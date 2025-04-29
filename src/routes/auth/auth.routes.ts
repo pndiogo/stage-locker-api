@@ -5,6 +5,7 @@ import { createErrorSchema, IdParamsSchema, IdUUIDParamsSchema } from "stoker/op
 
 import { insertUserchema, loginUserchema, loginUserchemaResponse, selectUserSchema } from "@/db/schema/auth";
 import { badRequestSchema, forbiddenSchema, internalServerErrorSchema, notFoundSchema, tooManyRequestsSchema, unauthorizedSchema } from "@/lib/constants";
+import { passwordSchema, tokenSchema } from "@/lib/schemas";
 import { authenticate, verifyUserStatus } from "@/middlewares/authenticate";
 import { rateLimit } from "@/middlewares/rate-limit";
 
@@ -69,9 +70,9 @@ export const verifyEmail = createRoute({
   },
 });
 
-export const resendVerificationEmail = createRoute({
+export const sendVerificationEmail = createRoute({
   tags,
-  path: "/auth/resend-verification-email",
+  path: "/auth/send-verification-email",
   method: "post",
   middleware: [rateLimit(3, 5 * 60 * 1000)], // Limit to 3 requests per 5 minutes
   request: {
@@ -79,7 +80,7 @@ export const resendVerificationEmail = createRoute({
       z.object({
         email: z.string().email("Missing email or invalid email format"),
       }),
-      "The user to resend the verification email",
+      "The user to send the verification email",
     ),
   },
   responses: {
@@ -108,6 +109,75 @@ export const resendVerificationEmail = createRoute({
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
       internalServerErrorSchema,
       "Internal server error",
+    ),
+  },
+});
+
+export const sendPasswordResetEmail = createRoute({
+  tags,
+  path: "/auth/send-password-reset-email",
+  method: "post",
+  middleware: [rateLimit(3, 5 * 60 * 1000)], // Limit to 3 requests per 5 minutes
+  request: {
+    body: jsonContentRequired(
+      z.object({
+        email: z.string().email("Missing email or invalid email format"),
+      }),
+      "The user to send the password reset email",
+    ),
+  },
+  responses: {
+    [HttpStatusCodes.NO_CONTENT]: {
+      description: "Password reset email sent",
+    },
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(z.object({
+        email: z.string().email("Invalid email format"),
+      })),
+      "The validation error(s)",
+    ),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: jsonContent(
+      tooManyRequestsSchema,
+      "Too many requests",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      internalServerErrorSchema,
+      "Internal server error",
+    ),
+  },
+});
+
+export const resetPassword = createRoute({
+  tags,
+  path: "/auth/reset-password",
+  method: "post",
+  request: {
+    body: jsonContentRequired(
+      z.object({
+        token: tokenSchema,
+        newPassword: passwordSchema,
+      }),
+      "The user to reset the password",
+    ),
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      z.object({
+        message: z.string(),
+      }),
+      "Password reset successfully",
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: jsonContent(
+      unauthorizedSchema,
+      "Invalid or expired token",
+    ),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      "User not found",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(insertUserchema),
+      "The validation error(s)",
     ),
   },
 });
@@ -243,7 +313,9 @@ export const getUser = createRoute({
 export type SignupRoute = typeof signup;
 export type LoginRoute = typeof login;
 export type VerifyEmailRoute = typeof verifyEmail;
-export type ResendVerificationEmailRoute = typeof resendVerificationEmail;
+export type SendVerificationEmailRoute = typeof sendVerificationEmail;
+export type SendPasswordResetEmailRoute = typeof sendPasswordResetEmail;
+export type ResetPasswordRoute = typeof resetPassword;
 export type GetUserRoute = typeof getUser;
 // export type ListUsersRoute = typeof listUsers;
 // export type PatchRoute = typeof patch;

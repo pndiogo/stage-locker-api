@@ -12,3 +12,5 @@ export const passwordSchema = z
   .max(128, "Password must be at most 128 characters long")
   .refine(val => !val.includes(" "), "Password must not contain spaces")
   .refine(val => !val.includes("password"), "Password must not contain the word 'password'");
+
+export const tokenSchema = z.string().min(1, "Token is required");

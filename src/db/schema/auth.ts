@@ -13,6 +13,8 @@ export const users = sqliteTable("user", {
   verified: integer({ mode: "boolean" })
     .notNull()
     .default(false),
+  verificationToken: text(),
+  passwordResetToken: text(),
   createdAt: integer({ mode: "timestamp" })
     .$defaultFn(() => new Date()),
   updatedAt: integer({ mode: "timestamp" })
