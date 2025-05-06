@@ -27,7 +27,7 @@
     "@hono/node-server": "^1.14.1",
     "@hono/zod-openapi": "^0.19.6",
     "@libsql/client": "^0.15.4",
-    "@scalar/hono-api-reference": "^0.8.5",
+    "@scalar/hono-api-reference": "^0.8.8",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
     "dotenv-expand": "^12.0.2",
@@ -39,17 +39,17 @@
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "stoker": "^1.4.2",
-    "zod": "^3.24.3"
+    "zod": "^3.24.4"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.12.0",
-    "@types/node": "^22.15.3",
-    "drizzle-kit": "^0.31.0",
-    "eslint": "^9.25.1",
+    "@antfu/eslint-config": "^4.13.0",
+    "@types/node": "^22.15.14",
+    "drizzle-kit": "^0.31.1",
+    "eslint": "^9.26.0",
     "eslint-plugin-format": "^1.0.1",
-    "tsc-alias": "^1.8.15",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
-    "vitest": "^3.1.2"
+    "vitest": "^3.1.3"
   }
 }
