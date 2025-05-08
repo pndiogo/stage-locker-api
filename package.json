@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.13.0",
-    "@types/node": "^22.15.14",
+    "@types/node": "^22.15.17",
     "drizzle-kit": "^0.31.1",
     "eslint": "^9.26.0",
     "eslint-plugin-format": "^1.0.1",
